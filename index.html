@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Maison — Hero v9</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter+Tight:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #FAF7F2;
+    --bg-elevated: #F5F1EA;
+    --ink: #1A1816;
+    --ink-soft: #4A4540;
+    --ink-faint: #908A82;
+    --accent: #A89377;
+    --accent-hover: #8B7861;
+    --line: rgba(26, 24, 22, 0.08);
+
+    --font-display: 'Cormorant Garamond', Georgia, serif;
+    --font-body: 'Inter Tight', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+    --gutter: clamp(20px, 4vw, 56px);
+    --space-section: clamp(80px, 12vw, 160px);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* ════════════════════════════════════════
+     NAV
+     ════════════════════════════════════════ */
+  .nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    padding: 22px var(--gutter);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background-color 380ms ease,
+                backdrop-filter 380ms ease,
+                padding 380ms ease,
+                border-color 380ms ease;
+    border-bottom: 1px solid transparent;
+  }
+
+  .nav.scrolled {
+    background-color: rgba(20, 18, 16, 0.78);
+    backdrop-filter: blur(16px) saturate(150%);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
+    padding-top: 16px;
+    padding-bottom: 16px;
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .nav-mark {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    color: #fff;
+    text-decoration: none;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.25);
+    transition: text-shadow 380ms ease;
+  }
+  .nav.scrolled .nav-mark { text-shadow: none; }
+
+  .nav-links {
+    display: flex;
+    gap: 36px;
+    list-style: none;
+  }
+  .nav-links a {
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #fff;
+    text-decoration: none;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.3);
+    transition: opacity 240ms ease, text-shadow 380ms ease;
+  }
+  .nav.scrolled .nav-links a { text-shadow: none; }
+  .nav-links a:hover { opacity: 0.6; }
+
+  .nav-cta {
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink);
+    background: #fff;
+    padding: 12px 22px;
+    border-radius: 9999px;
+    text-decoration: none;
+    transition: background 240ms ease, color 240ms ease;
+    box-shadow: 0 2px 24px rgba(0, 0, 0, 0.18);
+  }
+  .nav-cta:hover {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  /* ════════════════════════════════════════
+     HERO
+     ════════════════════════════════════════ */
+  .hero {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 640px;
+    overflow: hidden;
+    background: var(--ink);
+  }
+
+  /* Photo wrap — handles scroll parallax via JS (translates Y) */
+  .hero-photo-wrap {
+    position: absolute;
+    inset: 0;
+    will-change: transform;
+  }
+
+  /* Photo — handles Ken Burns ambient motion via CSS animation.
+     Separated from wrap so transforms don't collide. */
+  .hero-photo {
+    position: absolute;
+    inset: 0;
+    background-image: url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2400&q=80');
+    background-size: cover;
+    background-position: center;
+    transform: scale(1.05);
+    will-change: transform;
+    animation: kenburns 40s ease-in-out infinite alternate;
+  }
+
+  @keyframes kenburns {
+    0%   { transform: scale(1.05) translate(0, 0); }
+    100% { transform: scale(1.10) translate(-2%, -1%); }
+  }
+
+  .hero-photo-wrap::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(20, 18, 16, 0.55) 0%,
+      rgba(20, 18, 16, 0.25) 18%,
+      rgba(20, 18, 16, 0.0) 32%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .hero-photo-wrap::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(20, 18, 16, 0.0) 35%,
+      rgba(20, 18, 16, 0.50) 75%,
+      rgba(20, 18, 16, 0.82) 100%
+    );
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .hero-content {
+    position: absolute;
+    left: var(--gutter);
+    bottom: clamp(80px, 12vh, 140px);
+    right: var(--gutter);
+    max-width: 760px;
+    z-index: 2;
+    color: #fff;
+    will-change: transform, opacity;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.88);
+    margin-bottom: clamp(22px, 3.4vh, 36px);
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  .hero-eyebrow .dot {
+    width: 7px;
+    height: 7px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 0 14px color-mix(in srgb, var(--accent) 70%, transparent);
+  }
+
+  .hero-headline {
+    font-family: var(--font-display);
+    font-size: clamp(46px, 6.4vw, 96px);
+    font-weight: 400;
+    line-height: 1.04;
+    letter-spacing: -0.018em;
+    color: #fff;
+    margin-bottom: clamp(24px, 3.6vh, 36px);
+    max-width: 14ch;
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  .hero-headline em {
+    font-style: italic;
+    font-weight: 400;
+    color: #fff;
+  }
+
+  .hero-body {
+    font-family: var(--font-body);
+    font-size: clamp(15px, 1.1vw, 17px);
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 300;
+    max-width: 46ch;
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  /* SCROLL CUE — vertical track w/ descending segment */
+  .scroll-cue {
+    position: absolute;
+    right: var(--gutter);
+    bottom: clamp(28px, 5vh, 44px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    z-index: 2;
+    opacity: 0;
+    will-change: opacity;
+  }
+  .scroll-cue-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.78);
+  }
+  .scroll-cue-track {
+    position: relative;
+    width: 1px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.22);
+    overflow: hidden;
+  }
+  .scroll-cue-track::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: -16px;
+    width: 1px;
+    height: 16px;
+    background: rgba(255, 255, 255, 0.95);
+    animation: scroll-descend 2.2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  }
+  @keyframes scroll-descend {
+    0%   { top: -16px; opacity: 0; }
+    18%  { opacity: 1; }
+    82%  { opacity: 1; }
+    100% { top: 44px; opacity: 0; }
+  }
+
+  /* ════════════════════════════════════════
+     NEXT SECTION
+     ════════════════════════════════════════ */
+  .next {
+    position: relative;
+    background: var(--bg);
+    padding: var(--space-section) var(--gutter);
+    min-height: 80vh;
+    z-index: 1;
+  }
+  .next-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 24px;
+  }
+  .next-headline {
+    font-family: var(--font-display);
+    font-size: clamp(34px, 4.6vw, 68px);
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.018em;
+    color: var(--ink);
+    max-width: 1000px;
+  }
+  .next-headline em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  /* ════════════════════════════════════════
+     RESPONSIVE
+     ════════════════════════════════════════ */
+  @media (max-width: 768px) {
+    .nav { padding: 18px var(--gutter); }
+    .nav.scrolled { padding-top: 14px; padding-bottom: 14px; }
+    .nav-links { display: none; }
+    .nav-cta { padding: 10px 18px; font-size: 10px; }
+  }
+
+  @media (max-width: 640px) {
+    .hero { min-height: 580px; }
+    .hero-content { bottom: 110px; max-width: 100%; }
+    .hero-eyebrow { font-size: 10px; margin-bottom: 20px; }
+    .hero-headline { max-width: 100%; letter-spacing: -0.01em; }
+    .hero-body { font-size: 14px; max-width: 100%; }
+
+    .scroll-cue {
+      left: 50%;
+      right: auto;
+      transform: translateX(-50%);
+      bottom: 32px;
+    }
+    .scroll-cue-label { font-size: 9px; }
+    .scroll-cue-track { height: 36px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-photo,
+    .scroll-cue-track::after { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <a href="#" class="nav-mark">MAISON</a>
+  <ul class="nav-links">
+    <li><a href="#">Showroom</a></li>
+    <li><a href="#">Approach</a></li>
+    <li><a href="#">About</a></li>
+    <li><a href="#">Contact</a></li>
+  </ul>
+  <a href="#" class="nav-cta">Book a visit</a>
+</nav>
+
+<section class="hero" id="hero">
+  <div class="hero-photo-wrap" id="heroPhotoWrap">
+    <div class="hero-photo" id="heroPhoto"></div>
+  </div>
+
+  <div class="hero-content" id="heroContent">
+    <span class="hero-eyebrow" id="heroEyebrow">
+      <span class="dot"></span>A NEW DEVELOPMENT, EST. 2026
+    </span>
+    <h1 class="hero-headline" id="heroHeadline">
+      A quiet collection of <em>twenty-four residences</em>, set on a single hillside.
+    </h1>
+    <p class="hero-body" id="heroBody">
+      Designed for those who choose stillness. Architecture that listens. Interiors that breathe. A neighbourhood that disappears into the trees.
+    </p>
+  </div>
+
+  <div class="scroll-cue" id="scrollCue">
+    <span class="scroll-cue-label">Scroll</span>
+    <span class="scroll-cue-track"></span>
+  </div>
+</section>
+
+<section class="next">
+  <p class="next-eyebrow">— APPROACH</p>
+  <h2 class="next-headline">An estate of <em>twenty-four homes</em>, each held within the contour of the land it occupies.</h2>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+  // INTRO STAGGER
+  const tl = gsap.timeline({ defaults: { ease: 'power3.out', duration: 1.1 }, delay: 0.2 });
+  tl.to('#heroEyebrow', { opacity: 1, y: 0 })
+    .to('#heroHeadline', { opacity: 1, y: 0 }, '-=0.85')
+    .to('#heroBody', { opacity: 1, y: 0 }, '-=0.85')
+    .to('#scrollCue', { opacity: 1, duration: 0.8 }, '-=0.7');
+
+  // NAV SCROLL STATE + SCROLL-LINKED MOTION (mobile-friendly)
+  const nav = document.getElementById('nav');
+  const photoWrap = document.getElementById('heroPhotoWrap');
+  const heroContent = document.getElementById('heroContent');
+  const scrollCue = document.getElementById('scrollCue');
+
+  let ticking = false;
+  let heroHeight = window.innerHeight;
+  window.addEventListener('resize', () => { heroHeight = window.innerHeight; }, { passive: true });
+
+  function onScrollFrame() {
+    const sy = window.scrollY;
+
+    // Nav state
+    if (sy > 80) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+
+    // Photo parallax — wrap translates DOWN as page scrolls UP, so photo
+    // appears to scroll slower than foreground content.
+    const photoTranslate = sy * 0.4;
+    photoWrap.style.transform = `translate3d(0, ${photoTranslate}px, 0)`;
+
+    // Hero content — fades and lifts as you scroll past
+    const progress = Math.min(1, sy / (heroHeight * 0.75));
+    const contentFade = Math.max(0, 1 - progress);
+    const contentLift = progress * -50;
+    heroContent.style.opacity = String(contentFade);
+    heroContent.style.transform = `translate3d(0, ${contentLift}px, 0)`;
+
+    // Scroll cue — fades faster
+    scrollCue.style.opacity = String(Math.max(0, 1 - sy / 180));
+
+    ticking = false;
+  }
+
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(onScrollFrame);
+      ticking = true;
+    }
+  }, { passive: true });
+
+  onScrollFrame();
+</script>
+
+</body>
+</html>
